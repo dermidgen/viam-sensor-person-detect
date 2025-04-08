@@ -9,6 +9,7 @@ from viam.resource.base import ResourceBase
 from viam.resource.easy_resource import EasyResource
 from viam.resource.types import Model, ModelFamily
 from viam.utils import SensorReading, ValueTypes
+from viam.services.vision import Vision
 
 
 class PersonDetect(Sensor, EasyResource):
@@ -17,6 +18,10 @@ class PersonDetect(Sensor, EasyResource):
     MODEL: ClassVar[Model] = Model(
         ModelFamily("dermidgen", "viam-sensor-person-detect"), "person-detect"
     )
+
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.vision_service = None
 
     @classmethod
     def new(
@@ -45,7 +50,18 @@ class PersonDetect(Sensor, EasyResource):
         Returns:
             Sequence[str]: A list of implicit dependencies
         """
-        return []
+        deps = []
+        fields = config.attributes.fields
+
+        # We need the name of the vision service that provides the person detection via model
+        vision_service = fields.get("vision_service")
+        if vision_service:
+            deps.append(vision_service.string_value)
+        else:
+            raise ValueError("vision_service is required in the config")
+
+
+        return deps
 
     def reconfigure(
         self, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]
@@ -56,6 +72,11 @@ class PersonDetect(Sensor, EasyResource):
             config (ComponentConfig): The new configuration
             dependencies (Mapping[ResourceName, ResourceBase]): Any dependencies (both implicit and explicit)
         """
+
+        # Let's get the vision service from the dependencies
+        vision_service_name = config.attributes.fields.get("vision_service").string_value
+        self.vision_service = dependencies[Vision.get_resource_name(vision_service_name)]
+        
         return super().reconfigure(config, dependencies)
 
     async def get_readings(
