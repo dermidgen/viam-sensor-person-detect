@@ -1,0 +1,28 @@
+{
+  "$schema": "https://dl.viam.dev/module.schema.json",
+  "module_id": "dermidgen:viam-sensor-person-detect",
+  "visibility": "private",
+  "url": "",
+  "description": "Modular sensor component: person-detect",
+  "models": [
+    {
+      "api": "rdk:component:sensor",
+      "model": "dermidgen:viam-sensor-person-detect:person-detect",
+      "short_description": "Provide a short (100 characters or less) description of this model here",
+      "markdown_link": "README.md#model-dermidgenviam-sensor-person-detectperson-detect"
+    }
+  ],
+  "applications": null,
+  "markdown_link": "",
+  "entrypoint": "dist/main",
+  "first_run": "",
+  "build": {
+    "build": "./build.sh",
+    "setup": "./setup.sh",
+    "path": "dist/archive.tar.gz",
+    "arch": [
+      "linux/amd64",
+      "linux/arm64"
+    ]
+  }
+}

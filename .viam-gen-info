@@ -1,0 +1,13 @@
+{
+  "module_name": "viam-sensor-person-detect",
+  "namespace": "dermidgen",
+  "language": "python",
+  "resource_type": "component",
+  "resource_subtype": "sensor",
+  "model_name": "person-detect",
+  "enable_cloud_build": true,
+  "initialize_git": false,
+  "generator_version": "0.1.0",
+  "generated_on": "2025-04-08T21:25:55.229888Z",
+  "module_readme_link": ""
+}
