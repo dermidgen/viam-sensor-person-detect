@@ -1,18 +1,18 @@
 # Module viam-sensor-person-detect 
 
-Provide a description of the purpose of the module and any relevant information.
+This sensor module offers boolean sensor detection. It assumes you're using a vision service bound to an ML model that can do people detection. Typically, you'll want to set the confidence level up pretty high on your vision service, >= 0.5.
 
 ## Model dermidgen:viam-sensor-person-detect:person-detect
 
-Provide a description of the model and any relevant information.
+Uses the camera name in conjunction with your vision service to call `get_detections_from_camera` & give back a boolean `person_detected` value from readings.
 
 ### Configuration
 The following attribute template can be used to configure this model:
 
 ```json
 {
-"attribute_1": <float>,
-"attribute_2": <string>
+"camera_name": <string,
+"vision_service": <string>
 }
 ```
 
@@ -22,29 +22,28 @@ The following attributes are available for this model:
 
 | Name          | Type   | Inclusion | Description                |
 |---------------|--------|-----------|----------------------------|
-| `attribute_1` | float  | Required  | Description of attribute 1 |
-| `attribute_2` | string | Optional  | Description of attribute 2 |
+| `camera_name` | string | Required  | The name of the camera you want to use |
+| `vision_service` | string | Required  | The name of the vision service you've configured for detection |
 
 #### Example Configuration
 
 ```json
 {
-  "attribute_1": 1.0,
-  "attribute_2": "foo"
+  "camera_name": "camera-1",
+  "vision_service": "vision-1"
+}
+```
+
+### GetReadings
+
+Returns boolean `person_detected` value:
+
+```json
+{
+  "person_detected": <bool>
 }
 ```
 
 ### DoCommand
 
-If your model implements DoCommand, provide an example payload of each command that is supported and the arguments that can be used. If your model does not implement DoCommand, remove this section.
-
-#### Example DoCommand
-
-```json
-{
-  "command_name": {
-    "arg1": "foo",
-    "arg2": 1
-  }
-}
-```
+Not implemented.
