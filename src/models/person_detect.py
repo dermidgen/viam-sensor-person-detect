@@ -1,5 +1,5 @@
 from typing import (Any, ClassVar, Dict, Final, List, Mapping, Optional,
-                    Sequence)
+                    Sequence, cast)
 
 from typing_extensions import Self
 from viam.components.sensor import *
@@ -10,6 +10,7 @@ from viam.resource.easy_resource import EasyResource
 from viam.resource.types import Model, ModelFamily
 from viam.utils import SensorReading, ValueTypes
 from viam.services.vision import Vision
+from viam.components.camera import Camera
 
 
 class PersonDetect(Sensor, EasyResource):
@@ -81,12 +82,12 @@ class PersonDetect(Sensor, EasyResource):
             dependencies (Mapping[ResourceName, ResourceBase]): Any dependencies (both implicit and explicit)
         """
 
-        # Let's get the vision service from the dependencies
-        vision_service_name = config.attributes.fields.get("vision_service").string_value
-        self.vision_service = dependencies[Vision.get_resource_name(vision_service_name)]
-
         # Set the camera name from the config
         self.camera_name = config.attributes.fields.get("camera_name").string_value
+
+        # Let's get the vision service from the dependencies
+        vision_service_name = config.attributes.fields.get("vision_service").string_value
+        self.vision_service = cast(Vision, dependencies[Vision.get_resource_name(vision_service_name)])
 
         return super().reconfigure(config, dependencies)
 
@@ -104,13 +105,13 @@ class PersonDetect(Sensor, EasyResource):
         try:
             
             # Let's get detections from the camera
-            detections = await self.vision_service.get_camera_detections(self.camera_name)
+            detections = await self.vision_service.get_detections_from_camera(self.camera_name)
 
         except Exception as e:
             self.logger.error(f"Error in get_readings: {e}")
             raise e
         
-        return { "person_detect": 0 if not detections else 1 }
+        return { "person_detected": 0 if not detections else 1 }
 
     async def do_command(
         self,
