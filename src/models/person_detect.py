@@ -21,6 +21,7 @@ class PersonDetect(Sensor, EasyResource):
 
     def __init__(self, name: str):
         super().__init__(name)
+        self.camera_name = None
         self.vision_service = None
 
     @classmethod
@@ -53,6 +54,13 @@ class PersonDetect(Sensor, EasyResource):
         deps = []
         fields = config.attributes.fields
 
+        # We need a camera name to pass to the detector in the vision service
+        camera_name = fields.get("camera_name")
+        if camera_name:
+            deps.append(camera_name.string_value)
+        else:
+            raise ValueError("camera_name is required in the config")
+
         # We need the name of the vision service that provides the person detection via model
         vision_service = fields.get("vision_service")
         if vision_service:
@@ -76,7 +84,10 @@ class PersonDetect(Sensor, EasyResource):
         # Let's get the vision service from the dependencies
         vision_service_name = config.attributes.fields.get("vision_service").string_value
         self.vision_service = dependencies[Vision.get_resource_name(vision_service_name)]
-        
+
+        # Set the camera name from the config
+        self.camera_name = config.attributes.fields.get("camera_name").string_value
+
         return super().reconfigure(config, dependencies)
 
     async def get_readings(
@@ -86,8 +97,20 @@ class PersonDetect(Sensor, EasyResource):
         timeout: Optional[float] = None,
         **kwargs
     ) -> Mapping[str, SensorReading]:
-        self.logger.error("`get_readings` is not implemented")
-        raise NotImplementedError()
+
+        # We gotta find out from the vision service if there are any people detected
+        if self.vision_service is None:
+            raise ValueError("Vision service is not configured")
+        try:
+            
+            # Let's get detections from the camera
+            detections = await self.vision_service.get_camera_detections(self.camera_name)
+
+        except Exception as e:
+            self.logger.error(f"Error in get_readings: {e}")
+            raise e
+        
+        return { "person_detect": 0 if not detections else 1 }
 
     async def do_command(
         self,
