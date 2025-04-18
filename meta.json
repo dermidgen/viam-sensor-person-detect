@@ -13,7 +13,7 @@
     }
   ],
   "applications": null,
-  "markdown_link": "https://github.com/dermidgen/viam-sensor-person-detect/blob/main/README.md",
+  "markdown_link": "./README.md",
   "entrypoint": "dist/main",
   "first_run": "",
   "build": {
