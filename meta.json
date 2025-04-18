@@ -8,7 +8,7 @@
     {
       "api": "rdk:component:sensor",
       "model": "dermidgen:viam-sensor-person-detect:person-detect",
-      "short_description": "Provide a short (100 characters or less) description of this model here",
+      "short_description": "Provides person detection as a boolean value.",
       "markdown_link": "README.md#model-dermidgenviam-sensor-person-detectperson-detect"
     }
   ],
